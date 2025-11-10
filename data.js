@@ -1,4 +1,4 @@
-// Database câu hỏi SAT
+// Database câu hỏi 
 const questionDatabase = {
     math: [
         {
