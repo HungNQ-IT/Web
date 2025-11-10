@@ -1,0 +1,31 @@
+{
+  "id": "example_001",
+  "title": "Bài tập về nhà tuần 1 - Toán học",
+  "description": "Bài tập về đại số và hình học cơ bản",
+  "timeLimit": 3600,
+  "questions": [
+    {
+      "id": 1,
+      "question": "Nếu x + 5 = 12, giá trị của x là bao nhiêu?",
+      "options": ["5", "7", "12", "17"],
+      "correct": 1,
+      "explanation": "Giải:\nx + 5 = 12\nx = 12 - 5\nx = 7"
+    },
+    {
+      "id": 2,
+      "question": "Tính diện tích hình chữ nhật có chiều dài 8cm và chiều rộng 5cm?",
+      "options": ["13 cm²", "26 cm²", "40 cm²", "45 cm²"],
+      "correct": 2,
+      "explanation": "Diện tích hình chữ nhật = chiều dài × chiều rộng\n= 8 × 5\n= 40 cm²"
+    },
+    {
+      "id": 3,
+      "question": "Tính 15% của 200?",
+      "options": ["15", "30", "45", "60"],
+      "correct": 1,
+      "explanation": "15% × 200 = 0.15 × 200 = 30"
+    }
+  ],
+  "createdAt": "2024-01-01T00:00:00.000Z"
+}
+

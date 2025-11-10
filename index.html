@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Practice - Luyện thi SAT</title>
+    <style>
+        /* Test nhanh - nếu thấy màu đen là CSS đã load */
+        body {
+            background: #0f172a;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Trang chủ -->
+    <div id="homePage" class="page active">
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <h1>SAT Practice</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showPage('homePage'); return false;" class="nav-link active" data-page="homePage">Trang chủ</a></li>
+                        <li><a href="#" onclick="showPage('exercisesPage'); return false;" class="nav-link" data-page="exercisesPage">Bài tập</a></li>
+                        <li><a href="#" onclick="showPage('statsPage'); return false;" class="nav-link" data-page="statsPage">Thống kê</a></li>
+                        <li><a href="#" onclick="showPage('guidePage'); return false;" class="nav-link" data-page="guidePage">Hướng dẫn</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="container">
+                <h2>Gia sư 10 điểm</h2>
+                <p>Hệ thống luyện thi SAT chuyên nghiệp với câu hỏi thực tế, giải thích chi tiết và theo dõi tiến độ học tập</p>
+                <button class="btn-primary" onclick="document.querySelector('.categories').scrollIntoView({ behavior: 'smooth' })">Bắt đầu ngay</button>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <div class="feature-card">
+                    <div class="icon">⏱️</div>
+                    <h3>Luyện tập theo thời gian</h3>
+                    <p>Mô phỏng điều kiện thi thực tế với đồng hồ đếm ngược</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h3>Theo dõi tiến độ</h3>
+                    <p>Xem chi tiết kết quả và phân tích điểm yếu</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🏆</div>
+                    <h3>Giải thích chi tiết</h3>
+                    <p>Hiểu rõ từng câu hỏi với lời giải đầy đủ</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="categories">
+            <div class="container">
+                <h3>Chọn phần thi</h3>
+                <div class="category-grid">
+                    <div class="category-card" onclick="startTest('math')">
+                        <h4>Toán học (Math)</h4>
+                        <p>3 câu hỏi • 10 phút</p>
+                        <button class="btn-primary">Bắt đầu</button>
+                    </div>
+                    <div class="category-card" onclick="startTest('reading')">
+                        <h4>Đọc hiểu (Reading)</h4>
+                        <p>2 câu hỏi • 10 phút</p>
+                        <button class="btn-primary">Bắt đầu</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Trang làm bài -->
+    <div id="testPage" class="page">
+        <header class="test-header">
+            <div class="container">
+                <div class="progress-info">
+                    <span id="questionNumber">Câu 1/3</span>
+                    <div class="progress-bar">
+                        <div id="progressFill"></div>
+                    </div>
+                </div>
+                <div class="timer-container">
+                    <span>⏱️</span>
+                    <span id="timer">10:00</span>
+                    <button onclick="finishTest()" class="btn-danger">Kết thúc</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="test-main">
+            <div class="container">
+                <div class="question-card">
+                    <h2 id="questionText"></h2>
+                    <div id="optionsContainer"></div>
+                    <div id="explanationBox" class="explanation-box hidden"></div>
+                    <div class="button-group">
+                        <button id="submitBtn" onclick="checkAnswer()" class="btn-primary">Kiểm tra đáp án</button>
+                        <button id="nextBtn" onclick="nextQuestion()" class="btn-primary hidden">Câu tiếp theo</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Trang kết quả -->
+    <div id="resultsPage" class="page">
+        <div class="container">
+            <div class="results-card">
+                <div class="icon">🏆</div>
+                <h2>Hoàn thành bài thi!</h2>
+                <p>Kết quả của bạn</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="scoreValue">0/0</div>
+                        <div class="stat-label">Câu đúng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="percentValue">0%</div>
+                        <div class="stat-label">Tỷ lệ chính xác</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="timeValue">0:00</div>
+                        <div class="stat-label">Thời gian hoàn thành</div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="retakeTest()" class="btn-primary">Làm lại</button>
+                    <button onclick="showPage('exercisesPage')" class="btn-secondary">Về bài tập</button>
+                    <button onclick="goHome()" class="btn-secondary">Về trang chủ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trang Bài tập -->
+    <div id="exercisesPage" class="page">
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <h1>SAT Practice</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showPage('homePage'); return false;" class="nav-link" data-page="homePage">Trang chủ</a></li>
+                        <li><a href="#" onclick="showPage('exercisesPage'); return false;" class="nav-link active" data-page="exercisesPage">Bài tập</a></li>
+                        <li><a href="#" onclick="showPage('statsPage'); return false;" class="nav-link" data-page="statsPage">Thống kê</a></li>
+                        <li><a href="#" onclick="showPage('guidePage'); return false;" class="nav-link" data-page="guidePage">Hướng dẫn</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <section class="exercises-section">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 class="section-title">Danh sách bài tập</h2>
+                        <p class="section-subtitle">Chọn một bài tập để bắt đầu luyện tập</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; position: relative; z-index: 1000;">
+                        <button id="toggleHomeworkBtn" class="btn-secondary" style="padding: 1rem 2rem; cursor: pointer !important; pointer-events: auto !important; z-index: 1001 !important; position: relative;">
+                            📚 Quản lý bài tập về nhà
+                        </button>
+                        <button id="reloadHomeworkBtn" class="btn-secondary" style="padding: 1rem 2rem; cursor: pointer !important; pointer-events: auto !important; z-index: 1001 !important; position: relative;">
+                            🔄 Tải lại từ file
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Phần quản lý bài tập về nhà (ẩn mặc định) -->
+                <div id="homeworkManager" class="homework-manager hidden">
+                    <div class="homework-manager-card">
+                        <h3>📝 Quản lý bài tập về nhà</h3>
+                        
+                        <div class="upload-section">
+                            <h4>Thêm bài tập mới</h4>
+                            <div class="upload-form">
+                                <input type="file" id="homeworkFileInput" accept=".json" style="display: none;" onchange="handleFileUpload(event)">
+                                <button class="btn-primary" onclick="document.getElementById('homeworkFileInput').click()">
+                                    📤 Chọn file JSON
+                                </button>
+                                <p class="upload-hint">Hoặc tạo bài tập mới bằng form bên dưới</p>
+                            </div>
+
+                            <div class="create-homework-form">
+                                <h4>Tạo bài tập mới</h4>
+                                <div class="form-group">
+                                    <label>Tên bài tập:</label>
+                                    <input type="text" id="homeworkTitle" placeholder="Ví dụ: Bài tập về nhà tuần 1" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mô tả:</label>
+                                    <textarea id="homeworkDescription" placeholder="Mô tả bài tập..." class="form-textarea"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Thời gian (phút):</label>
+                                    <input type="number" id="homeworkTime" placeholder="60" class="form-input" min="1">
+                                </div>
+                                <button class="btn-primary" onclick="createHomeworkFromForm()">Tạo bài tập</button>
+                            </div>
+                        </div>
+
+                        <div class="homework-list-section">
+                            <h4>Danh sách bài tập về nhà</h4>
+                            <div id="homeworkList" class="homework-list">
+                                <!-- Danh sách bài tập sẽ được hiển thị ở đây -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách bài tập về nhà -->
+                <div id="homeworkExercises" class="homework-exercises-section">
+                    <h3 class="homework-section-title">📚 Bài tập về nhà</h3>
+                    <div id="homeworkExercisesGrid" class="exercises-grid">
+                        <!-- Bài tập về nhà sẽ được hiển thị ở đây -->
+                    </div>
+                </div>
+
+                <h3 class="homework-section-title" style="margin-top: 3rem;">📖 Bài tập mặc định</h3>
+                <div class="exercises-grid">
+                    <div class="exercise-card">
+                        <div class="exercise-icon">📐</div>
+                        <h3>Toán học (Math)</h3>
+                        <div class="exercise-info">
+                            <span class="info-item">📊 4 câu hỏi</span>
+                            <span class="info-item">⏱️ 10 phút</span>
+                            <span class="info-item">🎯 Độ khó: Trung bình</span>
+                        </div>
+                        <p class="exercise-description">Luyện tập các kỹ năng toán học cơ bản và nâng cao trong kỳ thi SAT</p>
+                        <button class="btn-primary" onclick="startTest('math')">Bắt đầu bài tập</button>
+                    </div>
+
+                    <div class="exercise-card">
+                        <div class="exercise-icon">📖</div>
+                        <h3>Đọc hiểu (Reading)</h3>
+                        <div class="exercise-info">
+                            <span class="info-item">📊 2 câu hỏi</span>
+                            <span class="info-item">⏱️ 10 phút</span>
+                            <span class="info-item">🎯 Độ khó: Trung bình</span>
+                        </div>
+                        <p class="exercise-description">Rèn luyện kỹ năng đọc hiểu và phân tích văn bản</p>
+                        <button class="btn-primary" onclick="startTest('reading')">Bắt đầu bài tập</button>
+                    </div>
+                </div>
+
+                <div class="quick-stats-card">
+                    <h3>Thống kê nhanh</h3>
+                    <div class="quick-stats-grid">
+                        <div class="quick-stat-item">
+                            <span class="quick-stat-label">Tổng bài đã làm</span>
+                            <span class="quick-stat-value" id="totalTests">0</span>
+                        </div>
+                        <div class="quick-stat-item">
+                            <span class="quick-stat-label">Điểm trung bình</span>
+                            <span class="quick-stat-value" id="averageScore">0%</span>
+                        </div>
+                        <div class="quick-stat-item">
+                            <span class="quick-stat-label">Thời gian luyện tập</span>
+                            <span class="quick-stat-value" id="totalTime">0 phút</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" onclick="showPage('statsPage')" style="margin-top: 2rem;">Xem thống kê chi tiết</button>
+                </div>
+
+                <!-- Template cho bài tập về nhà (ẩn) -->
+                <template id="homeworkTemplate">
+                    <div class="homework-item">
+                        <div class="homework-item-header">
+                            <h4 class="homework-item-title"></h4>
+                            <div class="homework-item-actions">
+                                <button class="btn-small btn-danger" onclick="deleteHomework('')">🗑️ Xóa</button>
+                                <button class="btn-small btn-secondary" onclick="exportHomework('')">📥 Xuất</button>
+                            </div>
+                        </div>
+                        <p class="homework-item-description"></p>
+                        <div class="homework-item-info">
+                            <span class="homework-item-questions"></span>
+                            <span class="homework-item-time"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </div>
+
+    <!-- Trang Thống kê -->
+    <div id="statsPage" class="page">
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <h1>SAT Practice</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showPage('homePage'); return false;" class="nav-link" data-page="homePage">Trang chủ</a></li>
+                        <li><a href="#" onclick="showPage('exercisesPage'); return false;" class="nav-link" data-page="exercisesPage">Bài tập</a></li>
+                        <li><a href="#" onclick="showPage('statsPage'); return false;" class="nav-link active" data-page="statsPage">Thống kê</a></li>
+                        <li><a href="#" onclick="showPage('guidePage'); return false;" class="nav-link" data-page="guidePage">Hướng dẫn</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <section class="stats-section">
+            <div class="container">
+                <h2 class="section-title">Thống kê học tập</h2>
+                <p class="section-subtitle">Theo dõi tiến độ và kết quả học tập của bạn</p>
+
+                <div class="stats-overview">
+                    <div class="stat-overview-card">
+                        <div class="stat-overview-icon">📊</div>
+                        <div class="stat-overview-content">
+                            <h3>Tổng bài đã làm</h3>
+                            <div class="stat-overview-value" id="statsTotalTests">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-overview-card">
+                        <div class="stat-overview-icon">🎯</div>
+                        <div class="stat-overview-content">
+                            <h3>Điểm trung bình</h3>
+                            <div class="stat-overview-value" id="statsAverageScore">0%</div>
+                        </div>
+                    </div>
+                    <div class="stat-overview-card">
+                        <div class="stat-overview-icon">⏱️</div>
+                        <div class="stat-overview-content">
+                            <h3>Thời gian luyện tập</h3>
+                            <div class="stat-overview-value" id="statsTotalTime">0 phút</div>
+                        </div>
+                    </div>
+                    <div class="stat-overview-card">
+                        <div class="stat-overview-icon">🏆</div>
+                        <div class="stat-overview-content">
+                            <h3>Tỷ lệ hoàn thành</h3>
+                            <div class="stat-overview-value" id="statsCompletionRate">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-tests">
+                    <h3>Lịch sử bài làm gần đây</h3>
+                    <div id="recentTestsList" class="recent-tests-list">
+                        <p class="no-data">Chưa có bài làm nào. Hãy bắt đầu luyện tập ngay!</p>
+                    </div>
+                </div>
+
+                <div class="performance-by-category">
+                    <h3>Thành tích theo chủ đề</h3>
+                    <div class="performance-grid">
+                        <div class="performance-card">
+                            <h4>📐 Toán học</h4>
+                            <div class="performance-stats">
+                                <div class="performance-stat">
+                                    <span>Số bài đã làm:</span>
+                                    <span id="mathTestsCount">0</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span>Điểm trung bình:</span>
+                                    <span id="mathAverageScore">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="performance-card">
+                            <h4>📖 Đọc hiểu</h4>
+                            <div class="performance-stats">
+                                <div class="performance-stat">
+                                    <span>Số bài đã làm:</span>
+                                    <span id="readingTestsCount">0</span>
+                                </div>
+                                <div class="performance-stat">
+                                    <span>Điểm trung bình:</span>
+                                    <span id="readingAverageScore">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group" style="margin-top: 3rem;">
+                    <button onclick="showPage('exercisesPage')" class="btn-primary">Làm bài tập</button>
+                    <button onclick="clearStats()" class="btn-secondary">Xóa thống kê</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Trang Hướng dẫn -->
+    <div id="guidePage" class="page">
+        <header>
+            <div class="container">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <h1>SAT Practice</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showPage('homePage'); return false;" class="nav-link" data-page="homePage">Trang chủ</a></li>
+                        <li><a href="#" onclick="showPage('exercisesPage'); return false;" class="nav-link" data-page="exercisesPage">Bài tập</a></li>
+                        <li><a href="#" onclick="showPage('statsPage'); return false;" class="nav-link" data-page="statsPage">Thống kê</a></li>
+                        <li><a href="#" onclick="showPage('guidePage'); return false;" class="nav-link active" data-page="guidePage">Hướng dẫn</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <section class="guide-section">
+            <div class="container">
+                <h2 class="section-title">Hướng dẫn sử dụng</h2>
+                <p class="section-subtitle">Tìm hiểu cách sử dụng hệ thống luyện thi SAT hiệu quả</p>
+
+                <div class="guide-content">
+                    <div class="guide-card">
+                        <div class="guide-number">1</div>
+                        <h3>Bắt đầu bài tập</h3>
+                        <p>Chọn "Bài tập" từ menu điều hướng, sau đó chọn một chủ đề mà bạn muốn luyện tập. Bạn có thể chọn giữa Toán học và Đọc hiểu.</p>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-number">2</div>
+                        <h3>Làm bài thi</h3>
+                        <p>Đọc kỹ từng câu hỏi và chọn đáp án mà bạn cho là đúng. Bạn có thể xem đồng hồ đếm ngược và thanh tiến độ ở phía trên màn hình.</p>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-number">3</div>
+                        <h3>Kiểm tra đáp án</h3>
+                        <p>Sau khi chọn đáp án, nhấn nút "Kiểm tra đáp án" để xem kết quả. Hệ thống sẽ hiển thị đáp án đúng và giải thích chi tiết cho từng câu hỏi.</p>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-number">4</div>
+                        <h3>Xem kết quả</h3>
+                        <p>Sau khi hoàn thành tất cả các câu hỏi, bạn sẽ thấy tổng kết kết quả bao gồm số câu đúng, tỷ lệ chính xác và thời gian hoàn thành.</p>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-number">5</div>
+                        <h3>Theo dõi tiến độ</h3>
+                        <p>Vào trang "Thống kê" để xem lịch sử bài làm, điểm trung bình và thành tích của bạn theo từng chủ đề.</p>
+                    </div>
+
+                    <div class="guide-card">
+                        <div class="guide-number">6</div>
+                        <h3>Luyện tập thường xuyên</h3>
+                        <p>Để đạt kết quả tốt nhất, hãy luyện tập thường xuyên. Hệ thống sẽ lưu lại tất cả kết quả của bạn để bạn có thể theo dõi sự tiến bộ.</p>
+                    </div>
+                </div>
+
+                <div class="tips-section">
+                    <h3>💡 Mẹo học tập hiệu quả</h3>
+                    <ul class="tips-list">
+                        <li>Đọc kỹ đề bài trước khi trả lời</li>
+                        <li>Quản lý thời gian hợp lý, không dành quá nhiều thời gian cho một câu hỏi</li>
+                        <li>Xem lại giải thích chi tiết sau mỗi câu hỏi để hiểu rõ hơn</li>
+                        <li>Luyện tập đều đặn mỗi ngày để cải thiện kỹ năng</li>
+                        <li>Sử dụng trang thống kê để xác định điểm yếu và tập trung cải thiện</li>
+                    </ul>
+                </div>
+
+                <div class="button-group" style="margin-top: 3rem;">
+                    <button onclick="showPage('exercisesPage')" class="btn-primary">Bắt đầu luyện tập</button>
+                    <button onclick="showPage('homePage')" class="btn-secondary">Về trang chủ</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+```
